@@ -76,14 +76,14 @@ export default function Home() {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className="flex items-center justify-center h-screen bg-gradient-to-r from-pink-light to-purple-dark">
       {formType === "signUp" && (
         <div className="flex flex-col items-center h-auto w-auto bg-white rounded-lg shadow-md p-10 ">
           <div className="font-sans font-bold text-4xl">Create Account</div>
           <div className="font-sans text-lg">
             Already Have an Account?{" "}
             <button
-              className="focus:outline-none text-blue-500 underline focus:ring-transparent"
+              className="focus:outline-none text-blue-500 underline outline-none"
               onClick={() =>
                 setFormState(() => ({ ...formState, formType: "signIn" }))
               }
