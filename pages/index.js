@@ -76,7 +76,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gradient-to-r from-pink-light to-purple-dark">
+    <div className="flex items-center justify-center mx-4 h-screen">
       {formType === "signUp" && (
         <div className="flex flex-col items-center h-auto w-auto bg-white rounded-lg shadow-md p-10 ">
           <div className="font-sans font-bold text-4xl">Create Account</div>

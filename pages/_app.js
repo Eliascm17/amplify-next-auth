@@ -2,9 +2,9 @@ import "tailwindcss/tailwind.css";
 
 function MyApp({ Component, pageProps }) {
   return (
-    // <div className="bg-gradient-to-r from-purples-light to-purples-dark">
-    <Component {...pageProps} />
-    // </div>
+    <div className="bg-gradient-to-r from-pink-light to-purple-dark">
+      <Component {...pageProps} />
+    </div>
   );
 }
 
