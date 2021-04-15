@@ -1,65 +1,130 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import { useState, useEffect } from "react";
+import Amplify, { Auth, Hub, Logger } from "aws-amplify";
+import config from "../src/aws-exports";
+Amplify.configure(config);
+
+const initialState = {
+  username: "",
+  password: "",
+  email: "",
+  authCode: "",
+  formType: "signUp",
+};
 
 export default function Home() {
+  const [formState, setFormState] = useState(initialState);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    checkIfUser();
+    setAuthListener();
+  }, []);
+
+  const setAuthListener = () => {
+    const logger = new Logger("My-Logger");
+    const listener = (data) => {
+      switch (data.payload.event) {
+        case "signOut":
+          logger.info("user signed out");
+          setFormState(() => ({ ...formState, formType: "signUp" }));
+          break;
+        default:
+          break;
+      }
+    };
+    Hub.listen("auth", listener);
+  };
+
+  const checkIfUser = async () => {
+    try {
+      const user = await Auth.currentAuthenticatedUser();
+      setUser(user);
+      setFormState(() => ({ ...formState, formType: "signedIn" }));
+    } catch (error) {
+      setUser(null);
+    }
+  };
+
+  const onChange = (e) => {
+    e.persist();
+    setFormState(() => ({ ...formState, [e.target.name]: e.target.value }));
+  };
+
+  const { formType } = formState;
+
+  const signUp = async () => {
+    const { username, email, password } = formState;
+    await Auth.signUp({ username, password, attributes: { email } });
+    setFormState(() => ({ ...formState, formType: "confirmSignUp" }));
+  };
+
+  const confirmSignUp = async () => {
+    const { username, authCode } = formState;
+    await Auth.confirmSignUp(username, authCode);
+    setFormState(() => ({ ...formState, formType: "signIn" }));
+  };
+
+  const signIn = async () => {
+    const { username, password } = formState;
+    const user = await Auth.signIn(username, password);
+    setUser(user);
+    setFormState(() => ({ ...formState, formType: "signedIn" }));
+  };
+
+  const signOut = async () => {
+    await Auth.signOut();
+  };
+
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
+    <div className="flex flex-col justify-center items-center max-w-2xl mx-auto mb-16">
+      {formType === "signUp" && (
+        <div>
+          <input name="username" onChange={onChange} placeholder="username" />
+          <input
+            name="password"
+            type="password"
+            onChange={onChange}
+            placeholder="password"
+          />
+          <input name="email" onChange={onChange} placeholder="email" />
+          <button onClick={signUp}>Sign Up</button>
+          <button
+            onClick={() =>
+              setFormState(() => ({ ...formState, formType: "signIn" }))
+            }
           >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+            Sign In
+          </button>
         </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+      )}
+      {formType === "confirmSignUp" && (
+        <div>
+          <input
+            name="authCode"
+            onChange={onChange}
+            placeholder="Confirmation Code"
+          />
+          <button onClick={confirmSignUp}>Confirm Code</button>
+        </div>
+      )}
+      {formType === "signIn" && (
+        <div>
+          <input name="username" onChange={onChange} placeholder="username" />
+          <input
+            name="password"
+            type="password"
+            onChange={onChange}
+            placeholder="password"
+          />
+          <button onClick={signIn}>Sign In</button>
+        </div>
+      )}
+      {formType === "signedIn" && (
+        <div>
+          <div>Hello, {user.username}</div>
+          <button onClick={signOut}>Sign Out</button>
+        </div>
+      )}
     </div>
-  )
+  );
 }
