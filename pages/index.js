@@ -76,53 +76,115 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center max-w-2xl mx-auto mb-16">
+    <div className="flex items-center justify-center h-screen">
       {formType === "signUp" && (
-        <div>
-          <input name="username" onChange={onChange} placeholder="username" />
-          <input
-            name="password"
-            type="password"
-            onChange={onChange}
-            placeholder="password"
-          />
-          <input name="email" onChange={onChange} placeholder="email" />
-          <button onClick={signUp}>Sign Up</button>
-          <button
-            onClick={() =>
-              setFormState(() => ({ ...formState, formType: "signIn" }))
-            }
-          >
-            Sign In
-          </button>
+        <div className="flex flex-col items-center h-auto w-auto bg-white rounded-lg shadow-md p-10 ">
+          <div className="font-sans font-bold text-4xl">Create Account</div>
+          <div className="font-sans text-lg">
+            Already Have an Account?{" "}
+            <button
+              className="focus:outline-none text-blue-500 underline focus:ring-transparent"
+              onClick={() =>
+                setFormState(() => ({ ...formState, formType: "signIn" }))
+              }
+            >
+              Sign In
+            </button>
+          </div>
+          <div className="w-full max-w-md my-4 space-y-3">
+            <input
+              className="pl-3 py-2 bg-gray-100 rounded-lg w-full"
+              name="username"
+              onChange={onChange}
+              placeholder="Username"
+            />
+            <input
+              className="pl-3 py-2 bg-gray-100 rounded-lg w-full"
+              name="password"
+              type="password"
+              onChange={onChange}
+              placeholder="Password"
+            />
+            <input
+              className="pl-3 py-2 bg-gray-100 rounded-lg w-full"
+              name="email"
+              onChange={onChange}
+              placeholder="Email"
+            />
+            <button
+              className="pl-3 py-2 bg-blue-400 text-white rounded-lg w-full"
+              onClick={signUp}
+            >
+              Sign Up
+            </button>
+          </div>
         </div>
       )}
       {formType === "confirmSignUp" && (
-        <div>
+        <div className="flex items-center h-auto w-auto bg-white rounded-lg shadow-md p-10 space-x-4">
+          {" "}
           <input
+            className="pl-3 py-2 bg-gray-100 rounded-lg w-auto"
             name="authCode"
             onChange={onChange}
             placeholder="Confirmation Code"
           />
-          <button onClick={confirmSignUp}>Confirm Code</button>
+          <button
+            className="p-2 bg-green-400 text-white rounded-lg w-full"
+            onClick={confirmSignUp}
+          >
+            Confirm Code
+          </button>
         </div>
       )}
       {formType === "signIn" && (
-        <div>
-          <input name="username" onChange={onChange} placeholder="username" />
-          <input
-            name="password"
-            type="password"
-            onChange={onChange}
-            placeholder="password"
-          />
-          <button onClick={signIn}>Sign In</button>
+        <div className="flex flex-col items-center h-auto w-auto bg-white rounded-lg shadow-md p-10 space-x-4">
+          <div className="font-sans font-bold text-4xl">Sign In</div>
+          <div className="font-sans text-lg">
+            Need an Account?{" "}
+            <button
+              className="focus:outline-none text-blue-500 underline focus:ring-transparent"
+              onClick={() =>
+                setFormState(() => ({ ...formState, formType: "signUp" }))
+              }
+            >
+              Sign Up
+            </button>
+          </div>
+          <div className="w-full max-w-md my-4 space-y-3">
+            <input
+              className="pl-3 py-2 bg-gray-100 rounded-lg w-full"
+              name="username"
+              onChange={onChange}
+              placeholder="username"
+            />
+            <input
+              className="pl-3 py-2 bg-gray-100 rounded-lg w-full"
+              name="password"
+              type="password"
+              onChange={onChange}
+              placeholder="password"
+            />
+            <button
+              className="p-2 bg-blue-400 text-white rounded-lg w-full"
+              onClick={signIn}
+            >
+              Sign In
+            </button>
+          </div>
         </div>
       )}
       {formType === "signedIn" && (
-        <div>
-          <div>Hello, {user.username}</div>
-          <button onClick={signOut}>Sign Out</button>
+        <div className="flex flex-col items-center h-auto w-auto bg-white rounded-lg shadow-md p-10 space-y-4">
+          <div className="font-sans font-bold text-4xl">
+            Hello, {user.username} 😄
+          </div>
+          <button
+            className="p-2 bg-red-400 text-white rounded-lg w-full"
+            onClick={signOut}
+          >
+            Sign Out
+          </button>
         </div>
       )}
     </div>
